@@ -1,0 +1,64 @@
+/*noinspection CssUnknownTarget*/
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+
+body {
+    background-color: #1e2527;
+    min-height: 100%;
+}
+
+p {
+    margin-bottom: 0 !important;
+}
+
+nav {
+    background-color: #181d1f;
+}
+
+.mono {
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.mono-400 {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 400;
+}
+
+.mono-700 {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+}
+
+#content-container {
+    height: auto;
+    scroll-margin-top: 4rem;
+    margin-top: 4rem;
+}
+
+.mt-3-1rem {
+    margin-top: 3.35rem;
+}
+
+textarea {
+    max-height: 20vh;
+}
+
+.line {
+    font-size: 0.9rem !important;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.typed-cursor {
+    color: white;
+    font-size: calc(1.375rem + 1.5vw);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 400;
+}
+
+.highlighted {
+    /*orange highlight - #e3b341*/
+    background-color: #b0b7b9;
+    mix-blend-mode: hard-light;
+}

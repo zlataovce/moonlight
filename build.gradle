@@ -1,0 +1,39 @@
+plugins {
+	id 'org.springframework.boot' version '2.5.2'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+}
+
+group = 'me.zlataovce'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+	implementation group: 'org.springframework', name: 'spring-aspects', version: '5.3.9'
+	implementation group: 'org.springframework.data', name: 'spring-data-jpa', version: '2.5.3'
+	implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.5.3.Final'
+	runtimeOnly 'mysql:mysql-connector-java'
+
+	implementation group: 'javax.persistence', name: 'javax.persistence-api', version: '2.2'
+
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
+	implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
+
+	implementation group: 'com.zaxxer', name: 'HikariCP', version: '5.0.0'
+}
