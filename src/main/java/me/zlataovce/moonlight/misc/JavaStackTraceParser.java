@@ -14,10 +14,6 @@ import java.util.stream.Collectors;
 public class JavaStackTraceParser {
     private static final Pattern excPattern = Pattern.compile("(?:(?![\\n\\r])\\s)+at ");
 
-    public static String filterIpAddr(String s) {
-        return s.replaceAll("\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b", "REDACTED");
-    }
-
     public static List<String> isolateExceptions(List<String> s) {
         boolean isCounting = false;
         StringBuilder currentTrace = new StringBuilder();

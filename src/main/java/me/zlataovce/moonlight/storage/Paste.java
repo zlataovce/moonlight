@@ -1,5 +1,6 @@
 package me.zlataovce.moonlight.storage;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,7 @@ import java.util.Date;
 @EqualsAndHashCode
 @Accessors(chain = true)
 public class Paste {
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id @GeneratedValue(strategy = GenerationType.AUTO) @JsonIgnore
     protected long id;
     @Getter
     private Date created;
@@ -23,7 +24,7 @@ public class Paste {
     @Getter @Setter
     private String identifier;
     @Getter @Setter
-    private String url;
+    private String url = null;
 
     @PrePersist
     protected void onCreate() {

@@ -1,8 +1,8 @@
 package me.zlataovce.moonlight.controllers;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import me.zlataovce.moonlight.misc.JavaStackTraceParser;
+import me.zlataovce.moonlight.misc.ParsingUtils;
 import me.zlataovce.moonlight.storage.Paste;
 import me.zlataovce.moonlight.storage.PasteRepository;
 import org.apache.commons.io.IOUtils;
@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
-@Slf4j
 public class PageController {
     private final PasteRepository pasteRepository;
 
@@ -57,7 +56,7 @@ public class PageController {
         }
     }
 
-    @PostMapping(path = "/put")
+    @PostMapping(path = "/put", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE})
     public String saveAndRetrieve(@RequestParam MultiValueMap<String, String> formData) {
         final String toSave = formData.getFirst("input");
         if (toSave == null) {
@@ -65,7 +64,7 @@ public class PageController {
         }
 
         final String id = RandomStringUtils.randomAlphanumeric(15);
-        this.pasteRepository.save(new Paste().setContent(Base64.getEncoder().encodeToString(JavaStackTraceParser.filterIpAddr(toSave).getBytes(Charset.defaultCharset()))).setIdentifier(id).setUrl(null));
+        this.pasteRepository.save(new Paste().setContent(Base64.getEncoder().encodeToString(ParsingUtils.filterIpAddr(toSave).getBytes(Charset.defaultCharset()))).setIdentifier(id).setUrl(null));
         return "redirect:view?id=" + id;
     }
 
@@ -86,7 +85,7 @@ public class PageController {
         try {
             final List<String> content = IOUtils.readLines(new InputStreamReader(new URL(searchFor).openConnection().getInputStream()));
             final String id = RandomStringUtils.randomAlphanumeric(15);
-            this.pasteRepository.save(new Paste().setContent(Base64.getEncoder().encodeToString(JavaStackTraceParser.filterIpAddr(String.join("\n", content)).getBytes(Charset.defaultCharset()))).setIdentifier(id).setUrl(searchFor));
+            this.pasteRepository.save(new Paste().setContent(Base64.getEncoder().encodeToString(ParsingUtils.filterIpAddr(String.join("\n", content)).getBytes(Charset.defaultCharset()))).setIdentifier(id).setUrl(searchFor));
             return "redirect:view?id=" + id;
         } catch (IOException e) {
             return "redirect:error?error=500&content=Could%20not%20acquire%20log.";
