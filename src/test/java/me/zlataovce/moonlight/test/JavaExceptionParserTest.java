@@ -27,13 +27,18 @@ public class JavaExceptionParserTest {
                         new ClassCastException(RandomStringUtils.randomAlphanumeric(15)),
                         new ClassNotFoundException(RandomStringUtils.randomAlphanumeric(15)),
                         new IllegalMonitorStateException(RandomStringUtils.randomAlphanumeric(15)),
-                        new ArrayStoreException(),
+                        new DuplicateFormatFlagsException(RandomStringUtils.randomAlphanumeric(15)),
+                        new ArrayStoreException(RandomStringUtils.randomAlphanumeric(15)),
                         new RuntimeException(),
                         new CloneNotSupportedException(),
                         new IllegalAccessException(),
                         new IllegalArgumentException(),
                         new SecurityException(),
-                        new IllegalCallerException()
+                        new IllegalCallerException(),
+                        new InstantiationException(),
+                        new InterruptedException(),
+                        new ReflectiveOperationException(),
+                        new LayerInstantiationException()
                 }
         );
         List<String[]> traces = exceptions.stream().map(MockException::getTrace).map(x -> x.split("\n")).collect(Collectors.toList());
