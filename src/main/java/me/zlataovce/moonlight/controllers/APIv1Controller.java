@@ -8,7 +8,6 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,19 +16,23 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/api/v1")
 public class APIv1Controller {
     private final PasteRepository pasteRepository;
 
-    @GetMapping(path = "/pastes/{id}")
-    public ResponseEntity<Paste> getPaste(@PathVariable String id) {
+    @GetMapping(path = "/pastes/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<?> getPaste(@PathVariable String id) {
         final Optional<Paste> result = this.pasteRepository.findByIdentifier(id);
-        return result.map(paste -> new ResponseEntity<>(paste, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        if (result.isPresent()) {
+            return new ResponseEntity<>(result.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(Collections.singletonMap("error", "Not found"), HttpStatus.NOT_FOUND);
+        }
     }
 
-    @PostMapping(path = "/pastes", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(path = "/pastes", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> createPaste(@RequestParam MultiValueMap<String, Object> data) {
         if (!data.containsKey("type") || !data.containsKey("content") || !(data.getFirst("type") instanceof String) || !(data.getFirst("content") instanceof String)) {
             return new ResponseEntity<>(Collections.singletonMap("error", "Invalid request form"), HttpStatus.BAD_REQUEST);

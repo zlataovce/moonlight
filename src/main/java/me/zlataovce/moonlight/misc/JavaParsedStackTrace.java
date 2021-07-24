@@ -15,4 +15,6 @@ public class JavaParsedStackTrace {
     private String optionalMessage = null;
     @Getter
     private final List<StackTraceElement> stack = new ArrayList<>();
+    @Getter @Setter
+    private int line;
 }

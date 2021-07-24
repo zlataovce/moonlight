@@ -35,7 +35,7 @@ public class MoonlightConfigurationManager {
         try {
             if (!this.configurationFile.exists()) {
                 new PropertiesBuilder(new BufferedWriter(new FileWriter(this.configurationFile)))
-                        .node("jdbcurl", "jdbc:mysql://localhost:3306/moonlight")
+                        .node("jdbcurl", "jdbc:mysql://localhost:3306/moonlight?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8")
                         .node("dbuser", "moonlight")
                         .node("dbpassword", RandomStringUtils.randomAlphanumeric(15))
                         .build();

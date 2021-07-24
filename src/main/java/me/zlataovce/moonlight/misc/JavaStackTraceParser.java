@@ -3,10 +3,7 @@ package me.zlataovce.moonlight.misc;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -14,10 +11,11 @@ import java.util.stream.Collectors;
 public class JavaStackTraceParser {
     private static final Pattern excPattern = Pattern.compile("(?:(?![\\n\\r])\\s)+at ");
 
-    public static List<String> isolateExceptions(List<String> s) {
+    public static HashMap<Integer, String> isolateExceptions(List<String> s) {
         boolean isCounting = false;
         StringBuilder currentTrace = new StringBuilder();
-        List<String> traces = new ArrayList<>();
+        int currentTraceLine = 0;
+        HashMap<Integer, String> traces = new HashMap<>();
         for (String line : s) {
             if (isCounting) {
                 if ((line.startsWith("at ") || excPattern.matcher(line).find()) && line.contains("(") && line.contains(")")) {
@@ -29,7 +27,7 @@ public class JavaStackTraceParser {
                     continue;
                 } else {
                     isCounting = false;
-                    traces.add(currentTrace.toString());
+                    traces.put(currentTraceLine, currentTrace.toString());
                     currentTrace.setLength(0);
                 }
             }
@@ -46,6 +44,7 @@ public class JavaStackTraceParser {
                         currentTrace.append(line);
                     }
                 }
+                currentTraceLine = s.indexOf(line);
                 if (!line.endsWith("\n")) {
                     currentTrace.append("\n");
                 }
@@ -54,9 +53,10 @@ public class JavaStackTraceParser {
         return traces;
     }
 
-    public static List<JavaParsedStackTrace> parseExceptions(List<String> s) {
+    public static List<JavaParsedStackTrace> parseExceptions(HashMap<Integer, String> s) {
         List<JavaParsedStackTrace> javaParsedStackTraces = new ArrayList<>();
-        for (String trace : s) {
+        for (Map.Entry<Integer, String> entry : s.entrySet()) {
+            String trace = entry.getValue();
             List<String> traceLines = Arrays.stream(trace.split("\n")).collect(Collectors.toList());
             JavaParsedStackTrace javaParsedStackTrace = new JavaParsedStackTrace();
             final boolean lineIndex = (trace.indexOf(traceLines.get(0)) + 1) <= traceLines.size() - 1 && (traceLines.get(traceLines.indexOf(traceLines.get(0)) + 1).startsWith("at ") || excPattern.matcher(traceLines.get(traceLines.indexOf(traceLines.get(0)) + 1)).find()) && traceLines.get(traceLines.indexOf(traceLines.get(0)) + 1).contains("(") && traceLines.get(traceLines.indexOf(traceLines.get(0)) + 1).contains(")") && traceLines.get(traceLines.indexOf(traceLines.get(0)) + 1).contains(".java");
@@ -84,6 +84,7 @@ public class JavaStackTraceParser {
                 String method = classParts.remove(classParts.size() - 1);
                 javaParsedStackTrace.getStack().add(new StackTraceElement(String.join(".", classParts), method, (fileAndLineCnt.length == 1) ? null : fileAndLineCnt[0], (fileAndLineCnt.length == 1) ? -2 : Integer.parseInt(fileAndLineCnt[1].trim())));
             }
+            javaParsedStackTrace.setLine(entry.getKey());
             javaParsedStackTraces.add(javaParsedStackTrace);
         }
         return javaParsedStackTraces;

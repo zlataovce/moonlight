@@ -33,6 +33,7 @@
                         <strong class="mb-1 text-wrap mono" th:text="${exc.getType()}"></strong>
                     </div>
                     <div class="col-10 mb-1 small text-wrap mono fw-light" th:if="${exc.getOptionalMessage() != null}" th:text="${exc.getOptionalMessage()}"></div>
+                    <small th:text="'L' + ${exc.getLine()}" onclick="pickLine(this.innerText)" class="cursor-pointer mono text-muted"></small>
                 </div>
             </div>
         </div>
