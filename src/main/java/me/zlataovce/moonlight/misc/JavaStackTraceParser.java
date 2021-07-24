@@ -31,7 +31,7 @@ public class JavaStackTraceParser {
                     currentTrace.setLength(0);
                 }
             }
-            final boolean lineIndex = (s.indexOf(line) + 1) <= s.size() - 1 && (s.get(s.indexOf(line) + 1).startsWith("at ") || excPattern.matcher(s.get(s.indexOf(line) + 1)).find()) && s.get(s.indexOf(line) + 1).contains("(") && s.get(s.indexOf(line) + 1).contains(")") && s.get(s.indexOf(line) + 1).contains(".java");
+            final boolean lineIndex = (s.indexOf(line) + 1) <= s.size() - 1 && (s.get(s.indexOf(line) + 1).startsWith("at ") || excPattern.matcher(s.get(s.indexOf(line) + 1)).find()) && s.get(s.indexOf(line) + 1).contains("(") && s.get(s.indexOf(line) + 1).contains(")") && (s.get(s.indexOf(line) + 1).contains(".java") || s.get(s.indexOf(line) + 1).contains("Native Method") || s.get(s.indexOf(line) + 1).contains("Unknown Source"));
             if ((line.contains(": ") && lineIndex) || (line.contains("Caused by: ") && lineIndex) || (line.toLowerCase(Locale.ROOT).contains("exception") && lineIndex)) {
                 isCounting = true;
                 if (line.contains("Caused by: ")) {
@@ -50,6 +50,10 @@ public class JavaStackTraceParser {
                 }
             }
         }
+        if (currentTrace.length() > 0) {
+            traces.put(currentTraceLine, currentTrace.toString());
+            currentTrace.setLength(0);
+        }
         return traces;
     }
 
@@ -59,18 +63,18 @@ public class JavaStackTraceParser {
             String trace = entry.getValue();
             List<String> traceLines = Arrays.stream(trace.split("\n")).collect(Collectors.toList());
             JavaParsedStackTrace javaParsedStackTrace = new JavaParsedStackTrace();
-            final boolean lineIndex = (trace.indexOf(traceLines.get(0)) + 1) <= traceLines.size() - 1 && (traceLines.get(traceLines.indexOf(traceLines.get(0)) + 1).startsWith("at ") || excPattern.matcher(traceLines.get(traceLines.indexOf(traceLines.get(0)) + 1)).find()) && traceLines.get(traceLines.indexOf(traceLines.get(0)) + 1).contains("(") && traceLines.get(traceLines.indexOf(traceLines.get(0)) + 1).contains(")") && traceLines.get(traceLines.indexOf(traceLines.get(0)) + 1).contains(".java");
+            final boolean lineIndex = (trace.indexOf(traceLines.get(0)) + 1) <= traceLines.size() - 1 && (traceLines.get(traceLines.indexOf(traceLines.get(0)) + 1).startsWith("at ") || excPattern.matcher(traceLines.get(traceLines.indexOf(traceLines.get(0)) + 1)).find()) && traceLines.get(traceLines.indexOf(traceLines.get(0)) + 1).contains("(") && traceLines.get(traceLines.indexOf(traceLines.get(0)) + 1).contains(")") && (traceLines.get(traceLines.indexOf(traceLines.get(0)) + 1).contains(".java") || traceLines.get(traceLines.indexOf(traceLines.get(0)) + 1).contains("Native Method") || traceLines.get(traceLines.indexOf(traceLines.get(0)) + 1).contains("Unknown Source"));
             if (traceLines.get(0).contains(": ") && lineIndex) {
                 List<String> split = Arrays.stream(traceLines.get(0).split(": ")).collect(Collectors.toList());
                 if (traceLines.get(0).contains("Caused by: ")) {
                     split.remove(0);
                 }
-                javaParsedStackTrace.setType(split.get(0));
+                javaParsedStackTrace.setType(split.get(0).trim());
                 if (split.size() > 1) {
-                    javaParsedStackTrace.setOptionalMessage(split.stream().skip(1).collect(Collectors.joining(": ")));
+                    javaParsedStackTrace.setOptionalMessage(split.stream().skip(1).collect(Collectors.joining(": ")).trim());
                 }
             } else {
-                javaParsedStackTrace.setType(traceLines.get(0));
+                javaParsedStackTrace.setType(traceLines.get(0).trim());
             }
 
             for (String line : traceLines.stream().skip(1).collect(Collectors.toList())) {
@@ -79,10 +83,12 @@ public class JavaStackTraceParser {
                     preprocess.remove(preprocess.size() - 1);
                 }
                 String[] elementParts = String.join(" ", preprocess).split("\\(");
-                String[] fileAndLineCnt = elementParts[1].replace(")", "").split(":");
+                String fileAndLineCnt = elementParts[1].replace(")", "");
                 List<String> classParts = Arrays.stream(elementParts[0].split("\\.")).collect(Collectors.toList());
                 String method = classParts.remove(classParts.size() - 1);
-                javaParsedStackTrace.getStack().add(new StackTraceElement(String.join(".", classParts), method, (fileAndLineCnt.length == 1) ? null : fileAndLineCnt[0], (fileAndLineCnt.length == 1) ? -2 : Integer.parseInt(fileAndLineCnt[1].trim())));
+                String file = (!fileAndLineCnt.contains(":")) ? null : fileAndLineCnt.split(":")[0];
+                int lineCnt = (!fileAndLineCnt.contains(":")) ? ((fileAndLineCnt.contains("Native Method")) ? -2 : -10) : Integer.parseInt(fileAndLineCnt.split(":")[1].trim());
+                javaParsedStackTrace.getStack().add(new StackTraceElement(String.join(".", classParts).trim(), method.trim(), file, lineCnt));
             }
             javaParsedStackTrace.setLine(entry.getKey());
             javaParsedStackTraces.add(javaParsedStackTrace);

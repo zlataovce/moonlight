@@ -3,11 +3,13 @@ package me.zlataovce.moonlight.misc;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
+@ToString
 public class JavaParsedStackTrace {
     @Getter @Setter
     private String type;
