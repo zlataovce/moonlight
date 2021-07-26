@@ -24,11 +24,14 @@ public class MoonlightConfigurator {
 
     @Bean
     public DataSource getDataSource() {
+        final String jdbcUrl = (System.getenv("moonlightjdbcurl") != null) ? System.getenv("moonlightjdbcurl") : this.moonlightConfigurationManager.getProp().getProperty("jdbcurl");
+        final String dbuser = (System.getenv("moonlightdbuser") != null) ? System.getenv("moonlightdbuser") : this.moonlightConfigurationManager.getProp().getProperty("dbuser");
+        final String dbpassword = (System.getenv("moonlightdbpassword") != null) ? System.getenv("moonlightdbpassword") : this.moonlightConfigurationManager.getProp().getProperty("dbpassword");
         return DataSourceBuilder.create()
                 .type(HikariDataSource.class)
-                .url(this.moonlightConfigurationManager.getProp().getProperty("jdbcurl"))
-                .username(this.moonlightConfigurationManager.getProp().getProperty("dbuser"))
-                .password(this.moonlightConfigurationManager.getProp().getProperty("dbpassword"))
+                .url(jdbcUrl)
+                .username(dbuser)
+                .password(dbpassword)
                 .build();
     }
 }
