@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -43,8 +44,8 @@ public class PageController {
         return "error";
     }
 
-    @GetMapping(path = "/view")
-    public String view(@RequestParam(name="id") String id, Model model) {
+    @GetMapping(path = "/view/{id}")
+    public String view(@PathVariable(name="id") String id, Model model) {
         final Optional<Paste> search = this.pasteRepository.findByIdentifier(id);
         if (search.isPresent()) {
             final String[] data = new String(Base64.getDecoder().decode(search.get().getContent()), Charset.defaultCharset()).split("\n");
@@ -68,7 +69,7 @@ public class PageController {
 
         final String id = RandomStringUtils.randomAlphanumeric(15);
         this.pasteRepository.save(new Paste().setContent(Base64.getEncoder().encodeToString(ParsingUtils.filterIpAddr(toSave).getBytes(Charset.defaultCharset()))).setIdentifier(id).setUrl(null));
-        return "redirect:view?id=" + id;
+        return "redirect:view/" + id;
     }
 
     @PostMapping(path = "/retrieve", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE})
@@ -79,17 +80,17 @@ public class PageController {
         }
         final Optional<Paste> searchUrl = this.pasteRepository.findByUrl(searchFor);
         if (searchUrl.isPresent()) {
-            return "redirect:view?id=" + searchUrl.get().getIdentifier();
+            return "redirect:view/" + searchUrl.get().getIdentifier();
         }
         final Optional<Paste> searchIdentifier = this.pasteRepository.findByIdentifier(searchFor);
         if (searchIdentifier.isPresent()) {
-            return "redirect:view?id=" + searchIdentifier.get().getIdentifier();
+            return "redirect:view/" + searchIdentifier.get().getIdentifier();
         }
         try {
             final List<String> content = IOUtils.readLines(new InputStreamReader(new URL(searchFor).openConnection().getInputStream()));
             final String id = RandomStringUtils.randomAlphanumeric(15);
             this.pasteRepository.save(new Paste().setContent(Base64.getEncoder().encodeToString(ParsingUtils.filterIpAddr(String.join("\n", content)).getBytes(Charset.defaultCharset()))).setIdentifier(id).setUrl(searchFor));
-            return "redirect:view?id=" + id;
+            return "redirect:view/" + id;
         } catch (IOException e) {
             return "redirect:error?error=500&content=Could%20not%20acquire%20log.";
         }
