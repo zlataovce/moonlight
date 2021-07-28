@@ -62,3 +62,7 @@ textarea {
     background-color: #b0b7b9;
     mix-blend-mode: hard-light;
 }
+
+.whitespace-pre {
+    white-space: pre;
+}

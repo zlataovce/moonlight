@@ -48,7 +48,10 @@ public class PageController {
         final Optional<Paste> search = this.pasteRepository.findByIdentifier(id);
         if (search.isPresent()) {
             final String[] data = new String(Base64.getDecoder().decode(search.get().getContent()), Charset.defaultCharset()).split("\n");
-            model.addAttribute("content", Arrays.stream(data).filter(x -> !x.equals("")).collect(Collectors.toList()));
+            final List<String> dataList = Arrays.stream(data).collect(Collectors.toList());
+            model.addAttribute("content", dataList);
+            // normalizing line prefix
+            model.addAttribute("maxlineprefixlength", ((dataList.size() - 1) + ":").length());
             model.addAttribute("exceptions", JavaStackTraceParser.parseExceptions(JavaStackTraceParser.isolateExceptions(Arrays.stream(data).filter(x -> !x.equals("")).collect(Collectors.toList()))));
             return "view";
         } else {
