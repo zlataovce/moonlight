@@ -1,3 +1,6 @@
+let pgs;
+let lang;
+
 function scrollToLine(elem) {
     // document.getElementById(elem).scrollIntoView(true);
     window.scroll(0, window.scrollY + document.getElementById(elem).getBoundingClientRect().top - 64);
@@ -55,11 +58,6 @@ function termHighlight(paragraphs) {
     }
 }
 
-function normalHighlight(paragraphs) {
-    let text = paragraphs.map(x => x.getElementsByTagName("span")[0].innerText).join('\n');
-    let lang = hljs.highlightAuto(text).lang;
-}
-
 function getOrDefault(item, def) {
     let result = window.localStorage.getItem(item);
 
@@ -71,10 +69,10 @@ function getOrDefault(item, def) {
 }
 
 function getParagraphs() {
-    let paragraphs = document.getElementsByTagName("p");
-    for (let p of paragraphs) {
-        if (!p.id.startsWith("L")) {
-            paragraphs = removeItemOnce(paragraphs, p);
+    let paragraphs = Array.from(document.getElementsByTagName('p'));
+    for (let i of paragraphs) {
+        if (!i.id.startsWith("L")) {
+            paragraphs = paragraphs.filter(item => item !== i);
         }
     }
     return paragraphs;
@@ -82,29 +80,47 @@ function getParagraphs() {
 
 function removeHighlights(paragraphs) {
     for (let p of paragraphs) {
-        p.removeAttribute("color");
-        p.getElementsByTagName("span")[0].innerHTML = p.getElementsByTagName("span")[0].innerText;
+        p.style.removeProperty("color");
+        p.querySelector("span").innerHTML = p.querySelector("span").innerText;
     }
 }
 
-function removeItemOnce(arr, value) {
-    let index = arr.indexOf(value);
-    if (index > -1) {
-        arr.splice(index, 1);
+function handleChecker(elem) {
+    removeHighlights(pgs);
+    if (elem.checked) {
+        document.getElementById("checker").checked = true;
+        window.localStorage.setItem("terminal", "true");
+        termHighlight(pgs);
+    } else {
+        window.localStorage.setItem("terminal", "false");
+        for (let i = 0; i < pgs.length; i++) {
+            pgs[i].querySelector("span").innerHTML = hljs.highlight(pgs[i].querySelector("span").innerHTML, {language: lang}).value;
+        }
     }
-    return arr;
 }
 
 window.onload = function () {
+    pgs = getParagraphs();
+    //config
+    let textList = [];
+    for (let i = 0; i < pgs.length; i++) {
+        // noinspection JSUnfilteredForInLoop
+        textList.push(pgs[i].querySelector("span").innerText);
+    }
+    lang = hljs.highlightAuto(textList.join("\n")).language;
+    //config end
+
     if (window.location.hash !== "") {
         console.log("line hash found, scrolling to line " + window.location.hash.replace("#L", ""));
         scrollAndHighlight(window.location.hash.replace("#", ""));
     }
 
-    let paragraphs = getParagraphs();
     if (getOrDefault("terminal", "false") === "true") {
-        termHighlight(paragraphs);
+        document.getElementById("checker").checked = true;
+        termHighlight(pgs);
     } else {
-
+        for (let i = 0; i < pgs.length; i++) {
+            pgs[i].querySelector("span").innerHTML = hljs.highlight(pgs[i].querySelector("span").innerHTML, {language: lang}).value;
+        }
     }
 }
