@@ -62,8 +62,8 @@ function getOrDefault(item, def) {
     let result = window.localStorage.getItem(item);
 
     if (result == null) {
-        result = def;
         window.localStorage.setItem(item, def);
+        return def;
     }
     return result;
 }
@@ -105,7 +105,7 @@ window.onload = function () {
         scrollAndHighlight(window.location.hash.replace("#", ""));
     }
 
-    if (getOrDefault("terminal", "false") === "true") {
+    if (getOrDefault("terminal", "true") === "true") {
         document.getElementById("checker").checked = true;
         termHighlight(pgs);
     } else {
