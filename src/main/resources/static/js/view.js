@@ -68,16 +68,6 @@ function getOrDefault(item, def) {
     return result;
 }
 
-function getParagraphs() {
-    let paragraphs = Array.from(document.getElementsByTagName('p'));
-    for (let i of paragraphs) {
-        if (!i.id.startsWith("L")) {
-            paragraphs = paragraphs.filter(item => item !== i);
-        }
-    }
-    return paragraphs;
-}
-
 function removeHighlights(paragraphs) {
     for (let p of paragraphs) {
         p.style.removeProperty("color");
@@ -100,7 +90,7 @@ function handleChecker(elem) {
 }
 
 window.onload = function () {
-    pgs = getParagraphs();
+    pgs = document.querySelectorAll('p[id^="L"]');
     //config
     let textList = [];
     for (let i = 0; i < pgs.length; i++) {

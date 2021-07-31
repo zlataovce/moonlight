@@ -27,7 +27,7 @@
         <a th:if="${!exceptions.isEmpty()}" class="nav-link mono text-white user-select-none cursor-pointer" onclick="document.getElementById('exceptions').classList.toggle('d-none')">Exceptions</a>
     </div>
 </nav>
-<div id="content-container" class="container-fluid">
+<div id="content-container" class="container-fluid mb-3">
     <th:block th:each="line, iter : ${content}" th:with="concatString=${iter.index} + ':'">
         <p th:id="'L' + ${iter.index}" class="text-white text-nowrap mono line" th:with="additionalSpaces=${maxlineprefixlength} - ${#strings.length(concatString)}">
             <a th:text="${iter.index} + ':' + ${#strings.repeat(' ', additionalSpaces)}" onclick="pickLine(this.parentNode.id)" class="text-muted whitespace-pre mono text-decoration-none user-select-none"></a>
