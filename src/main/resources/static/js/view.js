@@ -33,6 +33,9 @@ function termHighlight(paragraphs) {
             elem.style.setProperty("color", "red", "important");
         } else {
             const result = [...elem.innerHTML.matchAll(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g)];
+            for (let i = 0; i < result.length; i++) {
+                elem.innerHTML = elem.innerHTML.replace(result[0], "<span class='d-none'>" + result[0] + "</span>");
+            }
             if (result.length > 0) {
                 let match = result[0][0];
                 if (match.includes("30")) {
@@ -52,20 +55,9 @@ function termHighlight(paragraphs) {
                 } else if (match.includes("37")) {
                     elem.style.setProperty("color", "white", "important");
                 }
-                elem.innerHTML = elem.innerHTML.replace(match, "<span class='hidden'>" + match + "</span>>")
             }
         }
     }
-}
-
-function getOrDefault(item, def) {
-    let result = window.localStorage.getItem(item);
-
-    if (result == null) {
-        window.localStorage.setItem(item, def);
-        return def;
-    }
-    return result;
 }
 
 function removeHighlights(paragraphs) {
@@ -75,14 +67,11 @@ function removeHighlights(paragraphs) {
     }
 }
 
-function handleChecker(elem) {
+function handleChecker(type) {
     removeHighlights(pgs);
-    if (elem.checked) {
-        document.getElementById("checker").checked = true;
-        window.localStorage.setItem("terminal", "true");
+    if (type === "terminal") {
         termHighlight(pgs);
-    } else {
-        window.localStorage.setItem("terminal", "false");
+    } else if (type === "highlightjs") {
         for (let i = 0; i < pgs.length; i++) {
             pgs[i].querySelector("span").innerHTML = hljs.highlight(pgs[i].querySelector("span").innerHTML, {language: lang}).value;
         }
@@ -99,18 +88,16 @@ window.onload = function () {
     }
     lang = hljs.highlightAuto(textList.join("\n")).language;
     //config end
+    if (lang == undefined) {
+        lang = "plaintext";
+    }
 
     if (window.location.hash !== "") {
         console.log("line hash found, scrolling to line " + window.location.hash.replace("#L", ""));
         scrollAndHighlight(window.location.hash.replace("#", ""));
     }
 
-    if (getOrDefault("terminal", "true") === "true") {
-        document.getElementById("checker").checked = true;
-        termHighlight(pgs);
-    } else {
-        for (let i = 0; i < pgs.length; i++) {
-            pgs[i].querySelector("span").innerHTML = hljs.highlight(pgs[i].querySelector("span").innerHTML, {language: lang}).value;
-        }
+    for (let i = 0; i < pgs.length; i++) {
+        pgs[i].querySelector("span").innerHTML = hljs.highlight(pgs[i].querySelector("span").innerHTML, {language: lang}).value;
     }
 }

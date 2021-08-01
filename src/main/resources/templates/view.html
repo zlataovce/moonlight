@@ -9,6 +9,7 @@
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/styles/default.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <link th:href="@{/css/body.css}" rel="stylesheet"/>
     <script th:src="@{/js/view.js}"></script>
     <title>moonlight</title>
@@ -17,14 +18,7 @@
 <nav class="navbar fixed-top user-select-none">
     <div class="container-fluid justify-content-between">
         <span class="navbar-brand mb-0 h1 mono-700"><a th:href="@{/}" class="text-decoration-none text-white">moonlight</a></span>
-        <div class="nav-item d-flex justify-content-between">
-            <div class="mono text-white user-select-none my-auto pe-3">Terminal colors</div>
-            <label class="switch">
-                <input type="checkbox" id="checker" onclick="handleChecker(this)">
-                <span class="slider"></span>
-            </label>
-        </div>
-        <a th:if="${!exceptions.isEmpty()}" class="nav-link mono text-white user-select-none cursor-pointer" onclick="document.getElementById('exceptions').classList.toggle('d-none')">Exceptions</a>
+        <a class="user-select-none cursor-pointer" onclick="document.getElementById('drop').classList.toggle('d-none')"><i data-feather="menu" style="color: white;"></i></a>
     </div>
 </nav>
 <div id="content-container" class="container-fluid mb-3">
@@ -34,22 +28,22 @@
             <span th:text="${line}" class="whitespace-pre"></span>
         </p>
     </th:block>
-    <th:block th:if="${!exceptions.isEmpty()}">
-        <div id="exceptions" class="d-flex flex-column align-items-stretch flex-shrink-0 bg-dark float-right position-fixed top-0 end-0 mt-3-1rem d-none" style="width: 20vw; overflow-wrap: anywhere; line-height: normal; overflow-y: scroll; max-height: 90vh;">
-            <div class="d-flex align-items-center flex-shrink-0 p-3 border-bottom border-danger">
-                <span class="fs-5 fw-semibold mono text-white">Exceptions</span>
+    <div id="drop" class="d-flex position-fixed float-right top-0 end-0 shadow rounded-3 d-none">
+        <div class="row row-cols-2 m-3 user-select-none" style="margin-right: 1.5rem !important;">
+            <!-- remove the style when adding more stuff, it's there because bootstrap cols are retard -->
+            <div class="col my-1">
+                <i data-feather="terminal" style="color: white;" class="mb-2"></i>
+                <p class="mono text-white cursor-pointer" onclick="handleChecker('terminal')">Terminal</p>
             </div>
-            <div class="list-group list-group-flush border-bottom border-danger scrollarea bg-dark">
-                <div class="list-group-item list-group-item-action active py-3 lh-tight bg-dark border-danger" th:each="exc, iter : ${exceptions}">
-                    <div class="d-flex w-100 align-items-center justify-content-between bg-dark">
-                        <strong class="mb-1 text-wrap mono" th:text="${exc.getType()}"></strong>
-                    </div>
-                    <div class="col-10 mb-1 small text-wrap mono fw-light" th:if="${exc.getOptionalMessage() != null}" th:text="${exc.getOptionalMessage()}"></div>
-                    <small th:text="'L' + ${exc.getLine()}" onclick="pickLine(this.innerText)" class="cursor-pointer mono text-muted"></small>
-                </div>
+            <div class="col my-1">
+                <i data-feather="hexagon" style="color: white;" class="mb-2"></i>
+                <p class="mono text-white cursor-pointer" onclick="handleChecker('highlightjs')">HighlightJS</p>
             </div>
         </div>
-    </th:block>
+    </div>
 </div>
+<script>
+    feather.replace();
+</script>
 </body>
 </html>
