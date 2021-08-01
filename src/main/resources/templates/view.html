@@ -6,6 +6,8 @@
     <meta property="og:description" th:content="${content.size()} + ' lines, ' + ${exceptions.size()} + ' identified exceptions'">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/styles/default.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/highlight.min.js"></script>
@@ -18,7 +20,7 @@
 <nav class="navbar fixed-top user-select-none">
     <div class="container-fluid justify-content-between">
         <span class="navbar-brand mb-0 h1 mono-700"><a th:href="@{/}" class="text-decoration-none text-white">moonlight</a></span>
-        <a class="user-select-none cursor-pointer" onclick="document.getElementById('drop').classList.toggle('d-none')"><i data-feather="menu" style="color: white;"></i></a>
+        <a class="user-select-none cursor-pointer" onclick="openMenu()"><i data-feather="menu" style="color: white;"></i></a>
     </div>
 </nav>
 <div id="content-container" class="container-fluid mb-3">
@@ -39,6 +41,22 @@
                 <i data-feather="hexagon" style="color: white;" class="mb-2"></i>
                 <p class="mono text-white cursor-pointer" onclick="handleChecker('highlightjs')">HighlightJS</p>
             </div>
+            <div class="col my-1" th:if="${!exceptions.isEmpty()}">
+                <i data-feather="x-octagon" style="color: white;" class="mb-2"></i>
+                <p class="mono text-white cursor-pointer" onclick="toggleExceptions()">Exceptions</p>
+            </div>
+        </div>
+    </div>
+    <div id="exceptions" class="d-flex position-fixed float-right top-0 end-0 shadow rounded-3 d-none">
+        <div class="m-3">
+            <div class="mb-3 d-flex justify-content-between">
+                <span class="mono text-white fs-5">Exceptions</span>
+                <a onclick="toggleExceptions()" class="user-select-none cursor-pointer text-decoration-none my-auto"><i data-feather="x" style="color: white;"></i></a>
+            </div>
+            <p th:each="exc, iter : ${exceptions}" class="mono text-white">
+                <strong th:text="${exc.getType()}" data-bs-toggle="tooltip" data-bs-placement="top" th:title="${exc.getOptionalMessage()}"></strong>
+                <span th:text="'L' + ${exc.getLine()}" onclick="pickLine(this.innerText)" class="cursor-pointer mono text-muted"></span>
+            </p>
         </div>
     </div>
 </div>

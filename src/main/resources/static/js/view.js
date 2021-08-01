@@ -78,7 +78,25 @@ function handleChecker(type) {
     }
 }
 
+function openMenu() {
+    if (!document.getElementById('exceptions').classList.contains('d-none')) {
+        toggleExceptions();
+    } else {
+        document.getElementById('drop').classList.toggle('d-none');
+    }
+}
+
+function toggleExceptions() {
+    document.getElementById('drop').classList.toggle('d-none');
+    document.getElementById('exceptions').classList.toggle('d-none');
+}
+
 window.onload = function () {
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+
     pgs = document.querySelectorAll('p[id^="L"]');
     //config
     let textList = [];

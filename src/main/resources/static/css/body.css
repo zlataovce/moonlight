@@ -67,7 +67,7 @@ textarea {
     white-space: pre;
 }
 
-#drop {
+#drop, #exceptions {
     background-color: #1e2527;
     margin-top: 70px;
     margin-right: 10px;
