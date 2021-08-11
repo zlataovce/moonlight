@@ -63,7 +63,7 @@ function termHighlight(paragraphs) {
 function removeHighlights(paragraphs) {
     for (let p of paragraphs) {
         p.style.removeProperty("color");
-        p.querySelector("span").innerHTML = p.querySelector("span").innerText;
+        p.querySelector("span").innerHTML = _.escape(p.querySelector("span").innerText);
     }
 }
 
@@ -73,7 +73,7 @@ function handleChecker(type) {
         termHighlight(pgs);
     } else if (type === "highlightjs") {
         for (let i = 0; i < pgs.length; i++) {
-            pgs[i].querySelector("span").innerHTML = hljs.highlight(pgs[i].querySelector("span").innerHTML, {language: lang}).value;
+            pgs[i].querySelector("span").innerHTML = hljs.highlight(pgs[i].querySelector("span").innerText, {language: lang}).value;
         }
     }
 }
@@ -116,6 +116,6 @@ window.onload = function () {
     }
 
     for (let i = 0; i < pgs.length; i++) {
-        pgs[i].querySelector("span").innerHTML = hljs.highlight(pgs[i].querySelector("span").innerHTML, {language: lang}).value;
+        pgs[i].querySelector("span").innerHTML = hljs.highlight(pgs[i].querySelector("span").innerText, {language: lang}).value;
     }
 }
