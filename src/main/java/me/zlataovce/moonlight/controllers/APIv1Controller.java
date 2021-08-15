@@ -33,7 +33,7 @@ public class APIv1Controller {
     }
 
     @PostMapping(path = "/pastes", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<?> createPaste(@RequestParam MultiValueMap<String, Object> data) {
+    public ResponseEntity<?> createPaste(@RequestBody MultiValueMap<String, Object> data) {
         if (!data.containsKey("type") || !data.containsKey("content") || !(data.getFirst("type") instanceof String) || !(data.getFirst("content") instanceof String)) {
             return new ResponseEntity<>(Collections.singletonMap("error", "Invalid request form"), HttpStatus.BAD_REQUEST);
         }
