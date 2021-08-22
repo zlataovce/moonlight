@@ -19,6 +19,7 @@ import java.util.Optional;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/api/v1")
+@CrossOrigin
 public class APIv1Controller {
     private final PasteRepository pasteRepository;
 
