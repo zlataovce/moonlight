@@ -1,6 +1,11 @@
 let pgs;
 let lang;
 
+const regex = new RegExp([
+    '[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)',
+    '(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-ntqry=><~]))'
+].join('|'), 'g');
+
 function scrollToLine(elem) {
     // document.getElementById(elem).scrollIntoView(true);
     window.scroll(0, window.scrollY + document.getElementById(elem).getBoundingClientRect().top - 64);
@@ -27,17 +32,14 @@ function pickLine(elem) {
 function termHighlight(paragraphs) {
     for (let i = 0; i < paragraphs.length; i++) {
         let elem = paragraphs[i];
+        const result = [...elem.innerText.matchAll(regex)];
         if (elem.innerHTML.includes("WARN")) {
             elem.style.setProperty("color", "yellow", "important");
         } else if (elem.innerHTML.includes("ERROR") || elem.innerHTML.includes("SEVERE")) {
             elem.style.setProperty("color", "red", "important");
         } else {
-            const result = [...elem.innerHTML.matchAll(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g)];
-            for (let i = 0; i < result.length; i++) {
-                elem.innerHTML = elem.innerHTML.replace(result[0], "<span class='d-none'>" + result[0] + "</span>");
-            }
             if (result.length > 0) {
-                let match = result[0][0];
+                let match = result[0];
                 if (match.includes("30")) {
                     elem.style.setProperty("color", "black", "important");
                 } else if (match.includes("31")) {
@@ -56,6 +58,9 @@ function termHighlight(paragraphs) {
                     elem.style.setProperty("color", "white", "important");
                 }
             }
+        }
+        for (let i = 0; i < result.length; i++) {
+            elem.innerHTML = elem.innerHTML.replace(result[i], "<span class='d-none'>" + result[i] + "</span>");
         }
     }
 }

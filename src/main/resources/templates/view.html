@@ -28,7 +28,7 @@
     <th:block th:each="line, iter : ${content}" th:with="concatString=${iter.index} + ':'">
         <p th:id="'L' + ${iter.index}" class="text-white text-nowrap mono line" th:with="additionalSpaces=${maxlineprefixlength} - ${#strings.length(concatString)}">
             <a th:text="${iter.index} + ':' + ${#strings.repeat(' ', additionalSpaces)}" onclick="pickLine(this.parentNode.id)" class="text-muted whitespace-pre mono text-decoration-none user-select-none"></a>
-            <span th:text="${line}" class="whitespace-pre"></span>
+            <span th:text="${line}" class="whitespace-pre text-nowrap"></span>
         </p>
     </th:block>
     <div id="drop" class="d-flex position-fixed float-right top-0 end-0 shadow rounded-3 d-none">
